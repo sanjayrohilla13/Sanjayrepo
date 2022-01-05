@@ -1,8 +1,9 @@
-resource "null_resource" "dockervol" {
-  provisioner "local-exec" {
-    command = "mkdir noderedvol/ || true && chown -R 1000:1000 noderedvol/"
-  }
-}
+# resource "null_resource" "dockervol" {
+#   provisioner "local-exec" {
+#     command = "mkdir noderedvol/ || true && chown -R 1000:1000 noderedvol/"
+#   }
+# }
+# removed the dockervol from the docker and created inside the container module
 # Pull a container image
 # resource "docker_image" "nodered_image" {
 #   name = "nodered/node-red:latest"
@@ -47,7 +48,8 @@ resource "random_string" "random" {
 #converted the process to convert in the module 
 module "container" {
   source = "./container"
-  depends_on = [null_resource.dockervol]
+  #depends_on = [null_resource.dockervol]
+  # dockervol is moved to container module
   count = local.container_count
   name_in  = join("-", ["nodered", terraform.workspace ,random_string.random[count.index].result])
   image_in = module.image.image_out
