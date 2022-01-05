@@ -11,10 +11,10 @@
 
 output "container-name" {
   description = "The name of the container"
-  value       = module.container[*].container-name 
-  }
+  value       = module.container[*].container-name
+}
 
 output "ip-address" {
   description = "The ip address"
-  value       = flatten(module.container[*].ip-address)      
+  value       = flatten(module.container[*].ip-address)
 }

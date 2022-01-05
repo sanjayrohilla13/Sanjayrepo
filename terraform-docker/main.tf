@@ -1,3 +1,15 @@
+# creating local variable for defining multiple images for the containers
+locals {
+  deployment = {
+    nodered = {
+      image = var.image["nodered"][terraform.workspace]
+    }
+    influxdb = {
+      image = var.image["influxdb"][terraform.workspace]
+    }
+  }
+}
+
 # resource "null_resource" "dockervol" {
 #   provisioner "local-exec" {
 #     command = "mkdir noderedvol/ || true && chown -R 1000:1000 noderedvol/"
@@ -9,15 +21,14 @@
 #   name = "nodered/node-red:latest"
 # }
 # use module for pulling docker image
-module "nodered_image" {
-  source = "./image"
-  image_in = var.image["nodered"][terraform.workspace]
+module "image" {
+  source   = "./image"
+  for_each = local.deployment
+  #image_in = var.image["nodered"][terraform.workspace]
+  #image_in = locals.deployment.
+  image_in = each.value.image
 }
 
-module "influxdb_image" {
-  source = "./image"
-  image_in = var.image["influxdb"][terraform.workspace]
-}
 #generate a random string for docker name
 resource "random_string" "random" {
   count   = local.container_count
@@ -55,10 +66,10 @@ module "container" {
   source = "./container"
   #depends_on = [null_resource.dockervol]
   # dockervol is moved to container module
-  count = local.container_count
-  name_in  = join("-", ["nodered", terraform.workspace ,random_string.random[count.index].result])
-  image_in = module.nodered_image.image_out
-  int_port_in = var.int_port
-  ext_port_in = var.ext_port[terraform.workspace][count.index]
+  count             = local.container_count
+  name_in           = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
+  image_in          = module.image["nodered"].image_out
+  int_port_in       = var.int_port
+  ext_port_in       = var.ext_port[terraform.workspace][count.index]
   container_path_in = "/data"
 }

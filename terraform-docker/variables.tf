@@ -10,14 +10,14 @@ variable "image" {
   type        = map(any)
   description = "The list of docker images for various enviornments"
   default = {
-  nodered = {
-    dev  = "nodered/node-red:latest"
-    prod = "nodered/node-red:latest-minimal"
-  }
-  influxdb = {
-    dev  = "quay.io/influxdb/influxdb:v2.0.2"
-    prod = "quay.io/influxdb/influxdb:v2.0.2"
-  }
+    nodered = {
+      dev  = "nodered/node-red:latest"
+      prod = "nodered/node-red:latest-minimal"
+    }
+    influxdb = {
+      dev  = "quay.io/influxdb/influxdb:v2.0.2"
+      prod = "quay.io/influxdb/influxdb:v2.0.2"
+    }
   }
 }
 variable "int_port" {
@@ -33,7 +33,7 @@ variable "ext_port" {
   # type = number
   # type = list(any)
   # changed the code to reflect different ports for dev and prod
-  type = map
+  type = map(any)
   validation {
     #condition = var.ext_port <= 65535 && var.ext_port > 0
     # condition is replace with min and max functions as the variable is now list
